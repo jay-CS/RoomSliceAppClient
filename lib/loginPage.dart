@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: Color(0xFF6CA8F1),
+            color: Colors.purpleAccent,
             borderRadius: BorderRadius.circular(10.0),
             boxShadow: [
               BoxShadow(
@@ -46,6 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.white
               ),
               hintText: 'Enter your email!',
+              hintStyle: TextStyle(color: Colors.white10)
             ),
           )
           )
@@ -64,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
-            color: Color(0xFF6CA8F1),
+            color: Colors.purpleAccent,
             borderRadius: BorderRadius.circular(10.0),
             boxShadow: [
               BoxShadow(
@@ -89,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.white
               ),
               hintText: 'Enter your password!',
+              hintStyle: TextStyle(color: Colors.white10)
             ),
           )
           )
@@ -98,8 +100,10 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildRememberMeCheckBox() {
     return Container(
-            height: 20.0,
+            height: 25.0,
             child:Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              //mainAxisSize: MainAxisSize.max,
               children: <Widget>[
                 Theme(
                   data: ThemeData(unselectedWidgetColor: Colors.white),
@@ -114,7 +118,13 @@ class _LoginPageState extends State<LoginPage> {
                     }
                   ),
                 ),
-                Text("Remember me")
+                Text(
+                  "Remember me",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15.0
+                  )
+                )
               ],
             )
           );
@@ -141,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Text(
           "Login",
           style:TextStyle(
-            color: Color(0xFF527DAA),
+            color: Colors.purple,
             letterSpacing: 1.5,
             fontSize: 18.0,
             fontWeight: FontWeight.bold,
@@ -204,8 +214,9 @@ Widget _buildSocialButtonRow() {
       child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
       children: <Widget>[
-          _buildSocialButton(() => print("Login with facebook"), AssetImage("assets/logos/facebook.jpg")),
+          _buildSocialButton(() => print("Login with Facebook"), AssetImage("assets/logos/facebook.jpg")),
           _buildSocialButton(() => print("Login with Google"), AssetImage("assets.logos/google.jpg")),
+          //_buildSocialButton(() => print("Login wuth Twitter"), AssetImage("assets.logos/google.jpg")))
       ]
       ),
   );
@@ -255,10 +266,10 @@ Widget _buildSignUpButton() {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Color(0xFF73AEF5),
-                      Color(0xFF61A4F1),
-                      Color(0xFF478DE0),
-                      Color(0xFF398AE5),
+                      Colors.purple[400],
+                      Colors.purple[300],
+                      Colors.purple[200],
+                      Colors.purple[100],
                     ],
                     stops: [0.1, 0.4, 0.7, 0.9],
                   ),
@@ -276,7 +287,7 @@ Widget _buildSignUpButton() {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        'Sign In',
+                        'RoomSlice',
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'OpenSans',
