@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import './main.dart';
-//import 'package:flutter_login_ui/utilities/constants.dart';
 
 class LoginPage extends StatefulWidget {
   @override
