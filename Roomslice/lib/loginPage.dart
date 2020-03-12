@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import './signupPage.dart';
 import './main.dart';
+import './forgotPasswordPage.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -10,10 +12,10 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   
-  final email_Controller = TextEditingController();
-  final pass_Controller = TextEditingController();
+  final emailController = TextEditingController();
+  final passController = TextEditingController();
 
-  bool _RememberMe = false;
+  bool _rememberMe = false;
   
   Future<int> _makePostRequest(String username, String password) async {
   // set up POST request arguments
@@ -37,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildEmail() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         Text(
           "Email",
@@ -58,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
           height: 60.0,
           child:TextField(
             keyboardType: TextInputType.emailAddress,
-            controller: email_Controller,
+            controller: emailController,
             style: TextStyle(
               color: Colors.white
               ),
@@ -108,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
               color: Colors.white,
               fontFamily: 'OpenSans'
               ),
-            controller: pass_Controller,
+            controller: passController,
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 14.0),
@@ -142,7 +145,7 @@ class _LoginPageState extends State<LoginPage> {
                     activeColor: Colors.white,
                     onChanged: (value) {
                       setState(() {
-                        _RememberMe = value;
+                        _rememberMe = value;
                       });
                     }
                   ),
@@ -165,14 +168,17 @@ class _LoginPageState extends State<LoginPage> {
     return Container( 
       alignment: Alignment.centerRight,
       child:FlatButton(
-        onPressed: () => print("Forgot Password Pressed"),
+        onPressed: () {
+          ////FIX: CHange SignupPage to ForgotPassword Page
+          Navigator.push(context,MaterialPageRoute(builder: (context) => ForgotPasswordPage()),);
+        },
         padding: EdgeInsets.only(right: 0.0),
         child: Text(
           "Forgot Password",
           style: TextStyle(
             fontSize: 16.0,
             fontFamily: 'OpenSans',
-            color: Colors.white
+            color: Colors.white,
           ),
         ),
       )
@@ -188,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
-          _makePostRequest(email_Controller.text,pass_Controller.text).then((int value) {
+          _makePostRequest(emailController.text,passController.text).then((int value) {
             if(value == 200) {
               Navigator.push(context,MaterialPageRoute(builder: (context) => Roomify()),);
             }
@@ -282,7 +288,9 @@ Widget _buildSocialButtonRow() {
 /// Creates the button that allows for people to sign up and register an account 
 Widget _buildSignUpButton() {
   return GestureDetector(
-    onTap: () => print("Sign up button pressed"),
+    onTap: () {
+      Navigator.push(context,MaterialPageRoute(builder: (context) => SignupPage()),);
+    },
     child: RichText(
       text: TextSpan(
         children: [

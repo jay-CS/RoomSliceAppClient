@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       title: 'Flutter Login UI',
       debugShowCheckedModeBanner: false,
-      home:LoginPage()
+       home:LoginPage()
       );
   }
 }
@@ -81,7 +81,7 @@ class RoomifyState extends State<Roomify>{
               Icons.settings,
               color: Colors.purple,
               size: 25,
-            )
+            ), 
           ],
           color: Colors.white,
           buttonBackgroundColor: Colors.white,
