@@ -20,7 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   // set up POST request arguments
   String url = 'http://ec2-18-224-183-73.us-east-2.compute.amazonaws.com/api/login/';
   Map<String, String> headers = {"Content-type": "application/json"};
-  String json = '{"username": ' + '"' + username.toString() + '",'+ ' "password": ' + '"' + password.toString() + '"'+"}";
+  String json = '{"username": ' + '"' + username + '",'+ ' "password": ' + '"' + password + '"'+"}";
   print(json);
   // make POST request
   Response response = await post(url, headers: headers, body: json);
