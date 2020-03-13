@@ -91,7 +91,7 @@ class HomePage extends StatelessWidget {
                       _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
 
 
-                      _addColorBarText(statusBarText, statusBarHeight+10),
+                      _addColorBarText(statusBarText, Colors.blue ),
 
 //-------------------------ROOMMATE STATUS LIST-------------------------
                       Expanded(
@@ -101,7 +101,7 @@ class HomePage extends StatelessWidget {
                         ListView.builder(
 
                           shrinkWrap: true,
-                          padding: const EdgeInsets.all( 2),
+                          padding: const EdgeInsets.all(2),
                           itemCount:15, //dynamic
                           itemBuilder: (BuildContext context, int index){
                             return Container(
@@ -209,26 +209,11 @@ class HomePage extends StatelessWidget {
   }
 
 
-  Widget _addColorBarText(List<Widget> widgList, double height){
+  Widget _addColorBarText(List<Widget> widgList, Color color){
 
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(width: 1.0, color: Colors.white),
+    return Card(
 
-          bottom: BorderSide(width: 1.0, color: Colors.white),
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-
-          colors: [
-            Colors.blue[400],
-            Colors.blue[300],
-            Colors.blue[200],
-            Colors.blue[100],
-          ],),),
+      color: color,
       child:
 
 
