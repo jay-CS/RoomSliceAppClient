@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import './main.dart';
-//import 'package:flutter_login_ui/utilities/constants.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -14,6 +14,23 @@ class _LoginPageState extends State<LoginPage> {
   final pass_Controller = TextEditingController();
 
   bool _RememberMe = false;
+
+  Future<int> _makePostRequest(String username, String password) async {
+    // set up POST request arguments
+    String url = 'http://ec2-18-224-183-73.us-east-2.compute.amazonaws.com/api/login/';
+    Map<String, String> headers = {"Content-type": "application/json"};
+    String json = '{"username": ' + '"' + username.toString() + '",'+ ' "password": ' + '"' + password.toString() + '"'+"}";
+    print(json);
+    // make POST request
+    Response response = await post(url, headers: headers, body: json);
+    // check the status code for the result
+    int statusCode = response.statusCode;
+    print(statusCode);
+    // this API passes back the id of the new item added to the body
+    String body = response.body;
+    print(body);
+    return statusCode;
+  }
 
   //// EMAIL
   /// Creates the Email Text Field
@@ -171,13 +188,11 @@ class _LoginPageState extends State<LoginPage> {
         child: RaisedButton(
             elevation: 5.0,
             onPressed: () {
-              if(email_Controller.text == "jay") {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Roomify()),
-                );
-                print(email_Controller.text);
-              }
+              _makePostRequest(email_Controller.text,pass_Controller.text).then((int value) {
+                if(value == 200) {
+                  Navigator.push(context,MaterialPageRoute(builder: (context) => Roomify()),);
+                }
+              });
             },
             padding:EdgeInsets.all(15.0),
             shape: RoundedRectangleBorder(

@@ -1,5 +1,7 @@
 
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'textWrapper.dart';
@@ -44,7 +46,7 @@ class HomePage extends StatelessWidget {
     statusBarText.add(
 
 
-        genText.constructText());
+          genText.constructText());
 
 
 //------------------------------------STATUS BAR TEXT------------------------------
@@ -59,78 +61,78 @@ class HomePage extends StatelessWidget {
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: Stack(
-              children: <Widget>[
+            children: <Widget>[
 
-                Container(
+          Container(
 
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.purple[400],
-                        Colors.purple[300],
-                        Colors.purple[200],
-                        Colors.purple[100],
-                      ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.purple[400],
+                  Colors.purple[300],
+                  Colors.purple[200],
+                  Colors.purple[100],
+                ],
+                stops: [0.1, 0.4, 0.7, 0.9],
+              ),
+            ),
+
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+
+                  children: <Widget>[
+                    //_addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                    _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                    _buildProfilePicRow(blockSizeVertical*20, context),
+                    _addText( "Rommate Name",  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                    _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+
+
+                    _addColorBarText(statusBarText, statusBarHeight+10),
+
+//-------------------------ROOMMATE STATUS LIST-------------------------
+                    Container(
+
+                      height: 42* blockSizeVertical,
+                      child:
+                    ListView.builder(
+
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all( 2),
+                      itemCount:15, //dynamic
+                      itemBuilder: (BuildContext context, int index){
+                        return Container(
+                          height: 9*blockSizeVertical,
+
+                          color: Colors.purple[500],
+                          child: _addStatusRow(userID, context, 2),
+                        );
+                      },
+
+
                     ),
-                  ),
 
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-
-                    children: <Widget>[
-                      //_addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _buildProfilePicRow(blockSizeVertical*20, context),
-                      _addText( "Rommate Name",  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-                      _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-
-
-                      _addColorBarText(statusBarText, statusBarHeight+10),
-
-//-------------------------ROOMMATE STATUS LIST-------------------------
-                      Container(
-
-                        height: 42* blockSizeVertical,
-                        child:
-                        ListView.builder(
-
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all( 2),
-                          itemCount:15, //dynamic
-                          itemBuilder: (BuildContext context, int index){
-                            return Container(
-                              height: 9*blockSizeVertical,
-
-                              color: Colors.purple[500],
-                              child: _addStatusRow(userID, context, 2),
-                            );
-                          },
-
-
-                        ),
-
-                      ),
+                    ),
 
 //-------------------------ROOMMATE STATUS LIST-------------------------
 
-                    ],
-                  ),
-
-
-
-
-
+                  ],
                 ),
 
-              ]),
 
 
 
-        ),
+
+          ),
+
+          ]),
+
+
+
+          ),
       ),
 
     );
@@ -184,13 +186,13 @@ class HomePage extends StatelessWidget {
         label,
         textAlign: alignment,
         style: TextStyle(color: Colors.white.withOpacity(1.0),
-          fontSize:  fontSize,
-          fontWeight: fontWeight,
-          fontStyle: fontStyle,
-          decorationColor: Colors.blue,
+        fontSize:  fontSize,
+        fontWeight: fontWeight,
+        fontStyle: fontStyle,
+        decorationColor: Colors.blue,
 
 
-        ));
+    ));
   }
 
 
@@ -199,9 +201,9 @@ class HomePage extends StatelessWidget {
 
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
 
-      children: widgList,
+        children: widgList,
 
     );
   }
@@ -217,20 +219,20 @@ class HomePage extends StatelessWidget {
 
           bottom: BorderSide(width: 1.0, color: Colors.white),
         ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+      gradient: LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
 
-          colors: [
-            Colors.blue[400],
-            Colors.blue[300],
-            Colors.blue[200],
-            Colors.blue[100],
-          ],),),
+      colors: [
+        Colors.blue[400],
+        Colors.blue[300],
+        Colors.blue[200],
+        Colors.blue[100],
+      ],),),
       child:
 
 
-      _addTextRow(widgList),
+        _addTextRow(widgList),
     );
 
 
@@ -239,7 +241,7 @@ class HomePage extends StatelessWidget {
 
 
 
-  Widget  _addStatusRow(int userID, BuildContext context, int status){
+Widget  _addStatusRow(int userID, BuildContext context, int status){
 
     TextWrapper genText = new TextWrapper(context);
     List <Widget> roommateStatusBarText = new List<Widget>();
@@ -261,39 +263,39 @@ class HomePage extends StatelessWidget {
     roommateStatusBarText.add(genText.constructText());
 //------------------------------------STATUS BAR TEXT------------------------------
 
-    Icon genStatus = statusGenerator(status, statusBarHeight);
+  Icon genStatus = statusGenerator(status, statusBarHeight);
 
 
     return
 
 
       Container(
-          decoration: BoxDecoration(
-            color: Colors.black26,
-            border:Border.all(color: Colors.black, width: .5),
-          ),
-          child:
-          Row(
+      decoration: BoxDecoration(
+      color: Colors.black26,
+        border:Border.all(color: Colors.black, width: .5),
+  ),
+      child:
+      Row(
 
-              mainAxisAlignment: MainAxisAlignment.start,
-
-
-              children: <Widget>[
+      mainAxisAlignment: MainAxisAlignment.start,
 
 
+      children: <Widget>[
 
-                _buildProfilePicRow( blockSizeVertical*5.5, context ),
 
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 5),
 
-                  child: genStatus,
-                ),
-                roommateStatusBarText[0],
-                roommateStatusBarText[1],
+      _buildProfilePicRow( blockSizeVertical*5.5, context ),
 
-              ]
-          ));
+      Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5),
+
+         child: genStatus,
+      ),
+        roommateStatusBarText[0],
+        roommateStatusBarText[1],
+
+      ]
+    ));
 
   }
 
@@ -303,57 +305,57 @@ class HomePage extends StatelessWidget {
 
 
 
-    switch (status){
+switch (status){
 
-      case 1:
+  case 1:
 
-        return Icon(
-          Icons.lens,
-          color: Colors.green,
-          size: height,
+    return Icon(
+        Icons.lens,
+      color: Colors.green,
+    size: height,
 
-        );
+    );
 
-        break;
+    break;
 
-      case 2:
+  case 2:
 
-        return Icon(
-          Icons.lens,
-          color: Colors.yellow,
-          size: height,
-        );
+    return Icon(
+      Icons.lens,
+      color: Colors.yellow,
+      size: height,
+    );
 
-        break;
+    break;
 
-      case 3:
+  case 3:
 
-        return Icon(
-          Icons.lens,
-          color: Colors.red,
-          size: height,
-        );
+    return Icon(
+      Icons.lens,
+      color: Colors.red,
+      size: height,
+    );
 
-        break;
+    break;
 
-      default:
+  default:
 
-        return Icon(
-          Icons.error,
-          color: Colors.grey,
-          size: height,
-        );
+    return Icon(
+      Icons.error,
+      color: Colors.grey,
+      size: height,
+    );
+
+}
+
+
+
 
     }
 
 
 
 
+
   }
-
-
-
-
-
-}
 

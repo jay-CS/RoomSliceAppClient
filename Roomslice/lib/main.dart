@@ -56,66 +56,66 @@ class RoomifyState extends State<Roomify>{
     blockSizeVertical = scrnHeight / 100;
 
     return MaterialApp(
-      title: "Roomify",
-      theme: ThemeData(
-          primarySwatch: Colors.deepPurple
+        title: "Roomify",
+        theme: ThemeData(
+        primarySwatch: Colors.deepPurple
+    ),
+    home:Scaffold(
+      primary: false,
+      appBar: new AppBar(),
+      body: Container(
+        color: Colors.purple[100],
+        child: Center(
+          child: _pageOptions[_selectedPage],
+        ),
       ),
-      home:Scaffold(
-        primary: false,
-        appBar: new AppBar(),
-        body: Container(
-          color: Colors.purple[100],
-          child: Center(
-            child: _pageOptions[_selectedPage],
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _navKey,
+        index: 2,
+        height: blockSizeVertical*7,
+        items: <Widget>[
+
+          Icon(
+            Icons.message,
+            color: Colors.purple,
+            size: 25,
           ),
-        ),
-        bottomNavigationBar: CurvedNavigationBar(
-          key: _navKey,
-          index: 2,
-          height: blockSizeVertical*7,
-          items: <Widget>[
 
-            Icon(
-              Icons.message,
-              color: Colors.purple,
-              size: 25,
-            ),
+          Icon(
+            Icons.format_list_bulleted,
+            color: Colors.purple,
+            size: 25,
+          ),
 
-            Icon(
-              Icons.format_list_bulleted,
-              color: Colors.purple,
-              size: 25,
-            ),
+          Icon(
+            Icons.home,
+            color: Colors.purple,
+            size: 25,
+          ),
 
-            Icon(
-              Icons.home,
-              color: Colors.purple,
-              size: 25,
-            ),
-
-            Icon(
-              Icons.monetization_on,
-              color: Colors.purple,
-              size: 25,
-            ),
-            Icon(
-              Icons.settings,
-              color: Colors.purple,
-              size: 25,
-            )
-          ],
-          color: Colors.white,
-          buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.purple[100],
-          animationCurve: Curves.easeInOut,
-          animationDuration: Duration(milliseconds: 600),
-          onTap: (index) {
-            setState(() {
-              _selectedPage = index;
-            });
-          },
-        ),
+          Icon(
+            Icons.monetization_on,
+            color: Colors.purple,
+            size: 25,
+          ),
+          Icon(
+            Icons.settings,
+            color: Colors.purple,
+            size: 25,
+          )
+        ],
+        color: Colors.white,
+        buttonBackgroundColor: Colors.white,
+        backgroundColor: Colors.purple[100],
+        animationCurve: Curves.easeInOut,
+        animationDuration: Duration(milliseconds: 600),
+        onTap: (index) {
+          setState(() {
+            _selectedPage = index;
+          });
+        },
       ),
+    ),
     );
   }
 }

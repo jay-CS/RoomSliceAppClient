@@ -19,19 +19,19 @@ TextWidthBasis textWidthBasis;
 
 
   TextWrapper( BuildContext context){
-   data = "";
-   locale = Localizations.localeOf(context);
-   maxLines = 1;
-   overflow = TextOverflow.clip;
-   semanticsLabel = "";
-   softWrap = true;
+   data = null;
+   locale = null;
+   maxLines = null;
+   overflow = null;
+   semanticsLabel = null;
+   softWrap = null;
    strutStyle = null;
    style = null;
-   textAlign = TextAlign.left;
-   textDirection = TextDirection.ltr;
-   textScaleFactor = 1;
+   textAlign = null;
+   textDirection = null;
+   textScaleFactor = null;
    textSpan = null;
-   textWidthBasis = TextWidthBasis.longestLine;
+   textWidthBasis = null;
 
 
 
@@ -154,6 +154,24 @@ Widget constructText(){
 
 
     );
+}
+
+
+Widget constructSelectableText(){
+
+  return SelectableText(
+    data,
+    maxLines: maxLines,
+    strutStyle: strutStyle,
+    style: style,
+    textAlign: textAlign,
+    textDirection: textDirection,
+    textScaleFactor: textScaleFactor,
+    textWidthBasis: textWidthBasis,
+
+
+
+  );
 }
 
 }
