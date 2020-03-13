@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 import './loginPage.dart';
+import './homePage.dart';
 
 
 class SignupPage extends StatefulWidget {
@@ -9,14 +11,32 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> {
 
-  TextEditingController fName;
-  TextEditingController lName;
-  TextEditingController eName;
-  TextEditingController tNum;
-  TextEditingController pass;
-  TextEditingController confPass;
+  final fNameController = new TextEditingController();
+  final lNameController =  new TextEditingController();
+  final eNameController = new TextEditingController();
+  final tNumController = new TextEditingController();
+  final passController = new TextEditingController();
+  final confPassController = new TextEditingController();
 
+  Future<int> _makePostRequest(String name, String email, String pass) async {
+  // set up POST request arguments
+  String url = 'http://ec2-18-224-183-73.us-east-2.compute.amazonaws.com/api/profile/';
+  Map<String, String> headers = {"Content-type": "application/json"};
+  String json = '{"email": ' + '"' + email + '",'+ ' "name": ' + '"' + name + '"'+  ', "status": ' +  '"Sleep"'+ ',' + '"household": ' + '"' + null + '",' + '"password": ' + '"' + pass + '"' + "}";
+  print(json);
+  // make POST request
+  Response response = await post(url, headers: headers, body: json);
+  // check the status code for the result
+  int statusCode = response.statusCode;
+  print(statusCode);
+   // this API passes back the id of the new item added to the body
+  String body = response.body;
+  print(body);
+  return statusCode;
+  }
   
+  //The Widget notifies the user if they already have an account to hit cancel and go to Login Page
+  //Once tapped the widget will navigate the user to the Login Page
   Widget _buildLoginButton() {
   return GestureDetector(
     onTap: () {
@@ -49,6 +69,8 @@ class _SignupPageState extends State<SignupPage> {
 }
   
   /// Creates the Register Button 
+  /// Makes a POST request with user information
+  /// If information is valid a 201 code will be received and user is navigated to Home Page
   Widget _buildRegisterButton() {
     return Container(
       padding: EdgeInsets.only(top: 40, bottom: 20, left: 22, right: 22),
@@ -56,7 +78,12 @@ class _SignupPageState extends State<SignupPage> {
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
-          print("REGISTER!");
+          _makePostRequest(fNameController.text, eNameController.text,passController.text).then((status) {
+            if(status == 201) {
+              print("Account Created");
+              Navigator.push(context,MaterialPageRoute(builder: (context) => HomePage()),);
+            }
+          });
         },
         padding:EdgeInsets.all(15.0),
         shape: RoundedRectangleBorder(
@@ -77,6 +104,10 @@ class _SignupPageState extends State<SignupPage> {
       );
   }
 
+  //This widget creates all the text fields for the user's password and confirming the password 
+  //@textField, a String the notifies the user what to enter
+  //@hintText, a String thats placed in inside the textbox, notifying the user what to enter
+  //@Controller, is the corresponding controller to the information being collected (i.e. password field would use passController)
   Widget _buildPasswordField(String textField, String hintText, TextEditingController controller) {
     return Row(
       //mainAxisAlignment: MainAxisAlignment.center,
@@ -132,6 +163,10 @@ class _SignupPageState extends State<SignupPage> {
   }
   
 
+  //This widget creates all the text fields for the user's genreal information
+  //@textField, a String the notifies the user what to enter
+  //@hintText, a String thats placed in inside the textbox, notifying the user what to enter
+  //@Controller, is the corresponding controller to the information being collected (i.e. first name field would use fNameController)
   Widget _buildInformationField(String textField, String hintText, TextEditingController controller) {
     return Row(
       //mainAxisAlignment: MainAxisAlignment.center,
@@ -187,9 +222,9 @@ class _SignupPageState extends State<SignupPage> {
   }
 
 
+  //Creates the entire forgot password page
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -230,17 +265,17 @@ class _SignupPageState extends State<SignupPage> {
                         )
                       ),
                       SizedBox(height: 45.0),
-                      _buildInformationField("First Name:", "Enter your first name",fName),
+                      _buildInformationField("First Name:", "Enter your first name",fNameController),
                       SizedBox(height: 35.0),
-                      _buildInformationField("Last Name:", "Enter your last name",lName),
+                      _buildInformationField("Last Name:", "Enter your last name",lNameController),
                       SizedBox(height: 35.0),
-                      _buildInformationField("Email:", "Enter your email",eName),
+                      _buildInformationField("Email:", "Enter your email",eNameController),
                       SizedBox(height: 35.0),
-                      _buildInformationField("Number:", "Enter your number",tNum),
+                      _buildInformationField("Number:", "Enter your number",tNumController),
                       SizedBox(height: 35.0),
-                      _buildPasswordField("Password:", "Enter your password",pass),
+                      _buildPasswordField("Password:", "Enter your password",passController),
                       SizedBox(height: 35.0),
-                      _buildPasswordField("Password:", "Re-enter your password",confPass),
+                      _buildPasswordField("Password:", "Re-enter your password",confPassController),
                       _buildRegisterButton(),
                       _buildLoginButton()
                     ]

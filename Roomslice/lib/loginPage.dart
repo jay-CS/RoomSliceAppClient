@@ -15,7 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passController = TextEditingController();
 
-  bool _rememberMe = false;
   
   Future<int> _makePostRequest(String username, String password) async {
   // set up POST request arguments
@@ -145,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                     activeColor: Colors.white,
                     onChanged: (value) {
                       setState(() {
-                        _rememberMe = value;
+                        value = true;
                       });
                     }
                   ),
