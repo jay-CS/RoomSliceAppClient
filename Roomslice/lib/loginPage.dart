@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import './signupPage.dart';
-import './main.dart';
 import './forgotPasswordPage.dart';
+import './FileWriter.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,25 +11,32 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  
+
+  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passController = TextEditingController();
+  bool _autoValidate = true;
+
+  //String _name;
 
   
   Future<int> _makePostRequest(String username, String password) async {
   // set up POST request arguments
-  String url = 'http://ec2-18-224-183-73.us-east-2.compute.amazonaws.com/api/login/';
+  String url = 'http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/login/';
   Map<String, String> headers = {"Content-type": "application/json"};
   String json = '{"username": ' + '"' + username + '",'+ ' "password": ' + '"' + password + '"'+"}";
-  print(json);
   // make POST request
   Response response = await post(url, headers: headers, body: json);
   // check the status code for the result
   int statusCode = response.statusCode;
   print(statusCode);
-   // this API passes back the id of the new item added to the body
+  // this API passes back the id of the new item added to the body
   String body = response.body;
-  print(body);
+  if(statusCode == 200) {
+    FileWriter fw = new FileWriter();
+    fw.writeToken(body);
+    print("DONE");
+  }
   return statusCode;
 }
 
@@ -45,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         SizedBox(height: 10.0),
         Container(
+          padding: EdgeInsets.only(bottom: 12.0, top: 12.0),
           alignment: Alignment.centerLeft,
           decoration: BoxDecoration(
             color: Colors.purpleAccent,
@@ -58,7 +66,10 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
           height: 60.0,
-          child:TextField(
+          child:TextFormField(
+            onSaved: (String val) {
+              //_name = val;
+            },
             keyboardType: TextInputType.emailAddress,
             controller: emailController,
             style: TextStyle(
@@ -74,11 +85,24 @@ class _LoginPageState extends State<LoginPage> {
               hintText: 'Enter your email!',
               hintStyle: TextStyle(color: Colors.white)
             ),
+            validator: validateName,
           )
           )
       ],
     );
   }
+
+ String validateName(String value) {
+    String patttern = r'(^[a-zA-Z ]*$)';
+    RegExp regExp = new RegExp(patttern);
+    if (value.length == 0) {
+      return "Name is Required";
+    } else if (!regExp.hasMatch(value)) {
+      return "Name must be a-z and A-Z";
+    }
+    return null;
+  }
+
 
   //// PASSWORD 
   /// Creates the Password Text Field
@@ -184,6 +208,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
    
+  void _validateInputs() {
+  if (_formKey.currentState.validate()) {
+//    If all data are correct then save data to out variables
+    _formKey.currentState.save();
+  } else {
+//    If all data are not valid then start auto validation.
+    setState(() {
+      _autoValidate = true;
+    });
+  }
+}
+
   ////
   /// Creates the Login Button 
   Widget _buildLoginButton() {
@@ -195,8 +231,11 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () {
           _makePostRequest(emailController.text,passController.text).then((int value) {
             if(value == 200) {
-              Navigator.push(context,MaterialPageRoute(builder: (context) => Roomify()),);
+              Navigator.pushNamed(context,'Roomify',);
             }
+        else {
+          _validateInputs();
+        }
           });
         },
         padding:EdgeInsets.all(15.0),
@@ -242,6 +281,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+
 ////
 /// Creates a logo for each alternative sign in option a person has 
 Widget _buildSocialButton(Function onTap, AssetImage logo) {
@@ -283,6 +323,7 @@ Widget _buildSocialButtonRow() {
   );
 }
 
+
 ////
 /// Creates the button that allows for people to sign up and register an account 
 Widget _buildSignUpButton() {
@@ -314,10 +355,15 @@ Widget _buildSignUpButton() {
     )
   );
 }
+
+
   //// Constructs the entire login page
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return new Form(
+      key: _formKey,
+      autovalidate: _autoValidate,
+      child: Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: GestureDetector(
@@ -381,6 +427,78 @@ Widget _buildSignUpButton() {
           ),
         ),
       ),
+      )
     );
   }
 }
+
+
+
+
+
+
+// Scaffold(
+//       body: AnnotatedRegion<SystemUiOverlayStyle>(
+//         value: SystemUiOverlayStyle.light,
+//         child: GestureDetector(
+//           onTap: () => FocusScope.of(context).unfocus(),
+//           child: Stack(
+//             children: <Widget>[
+//               Container(
+//                 height: double.infinity,
+//                 width: double.infinity,
+//                 decoration: BoxDecoration(
+//                   gradient: LinearGradient(
+//                     begin: Alignment.topCenter,
+//                     end: Alignment.bottomCenter,
+//                     colors: [
+//                       Colors.purple[400],
+//                       Colors.purple[300],
+//                       Colors.purple[200],
+//                       Colors.purple[100],
+//                     ],
+//                     stops: [0.1, 0.4, 0.7, 0.9],
+//                   ),
+//                 ),
+//               ),
+//               Container(
+//                 height: double.infinity,
+//                 child: SingleChildScrollView(
+//                   physics: AlwaysScrollableScrollPhysics(),
+//                   padding: EdgeInsets.symmetric(
+//                     horizontal: 40.0,
+//                     vertical: 120.0,
+//                   ),
+//                   child: Column(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: <Widget>[
+//                       Text(
+//                         'RoomSlice',
+//                         style: TextStyle(
+//                           color: Colors.white,
+//                           fontFamily: 'OpenSans',
+//                           fontSize: 45.0,
+//                           fontWeight: FontWeight.bold,
+//                         ),
+//                       ),
+//                       SizedBox(height: 30.0),
+//                       _buildEmail(),
+//                       SizedBox(
+//                         height: 30.0,
+//                       ),
+//                       _buildPassword(),
+//                       _buildForgotPasswordButton(),
+//                       _buildRememberMeCheckBox(),
+//                       _buildLoginButton(),
+//                       _buildSignInWithText(),
+//                       _buildSocialButtonRow(),
+//                       _buildSignUpButton(),
+//                     ],
+//                   ),
+//                 ),
+//               )
+//             ],
+//           ),
+//         ),
+//       ),
+//     );

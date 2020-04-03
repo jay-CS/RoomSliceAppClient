@@ -1,7 +1,9 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'package:roomslice/FileWriter.dart';
 import 'textWrapper.dart';
 
 
@@ -9,15 +11,48 @@ double scrnWidth = 0;
 double scrnHeight = 0;
 double blockSize = 0;
 double blockSizeVertical = 0;
+final fw = new FileWriter();
+
+class Roomate{
+  Roomate(this.id, this.email, this.name,this.status,this.household); 
+  final int id;
+  final String email;
+  final String name;
+  final String status;
+  final int household;
+
+}
 
 @override
-
 class HomePage extends StatelessWidget {
+  
+
+  Future<String> fetchUser() async {
+    String id;
+    await fw.getID1().then((value) {
+      id = value;
+    });
+    if(id != null && id != "" ) {
+       http.Response response = await http.get(
+      //Uri.encodeFull removes all the dashes or extra characters present in our Uri
+        Uri.encodeFull('http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/profile/' + id ),
+        headers: {
+        //if your api require key then pass your key here as well e.g "key": "my-long-key"
+       "Accept": "application/json" 
+        }
+      );
+      print(response.body);
+      return response.body;
+    }
+    else {
+      print("Nothing");
+      return null;
+    }
+  }
 
 
   Widget build(BuildContext context) {
-
-
+    
     scrnWidth = MediaQuery.of(context).size.width;
     scrnHeight = MediaQuery.of(context).size.height;
     blockSize = scrnWidth / 100;
@@ -82,11 +117,14 @@ class HomePage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
 
                     children: <Widget>[
+                    
                       //_addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _buildProfilePicRow(blockSizeVertical*20, context),
-                      _addText( "Rommate Name",  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-                      _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                      // _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                      // _buildProfilePicRow(blockSizeVertical*20, context),
+                      // _addText( "Rommate Name",  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                      // _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                      projectWidget(context),
+
 
 
                       _addColorBarText(statusBarText, statusBarHeight+10),
@@ -144,7 +182,7 @@ class HomePage extends StatelessWidget {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            _buildRoundButton(() => print("Change Profile Pic"), AssetImage("assets/logos/profilePic.png"), size),
+            //_buildRoundButton(() => print("Change Profile Pic"), AssetImage("assets/logos/profilePic.png"), size),
 
 
           ]
@@ -193,7 +231,32 @@ class HomePage extends StatelessWidget {
         ));
   }
 
+Widget _addProfile(BuildContext context, String s) {
+  print("STUFF");
+  print(s);
+  return Container(
+    child: Column(children: <Widget>[
+                      _addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                      _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                      _buildProfilePicRow(blockSizeVertical*20, context),
+                      _addText(s,  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                      _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+    ],),
+  );
+}
 
+Widget projectWidget(BuildContext context) {
+  return FutureBuilder(
+    future: fetchUser(),
+    builder: (context, snapshot) {
+      if (snapshot.hasData) {
+        return _addProfile(context, snapshot.data);
+      }
+      print("Here1");
+        return _addProfile(context, "");
+      }
+  );
+}
 
   Widget _addTextRow(List<Widget> widgList) {
 
