@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import './loginPage.dart';
 import './homePage.dart';
+import './FileWriter.dart';
 
 
 class SignupPage extends StatefulWidget {
@@ -10,6 +11,7 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+
 
   final fNameController = new TextEditingController();
   final lNameController =  new TextEditingController();
@@ -20,19 +22,21 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<int> _makePostRequest(String name, String email, String pass) async {
   // set up POST request arguments
-  String url = 'http://ec2-18-224-183-73.us-east-2.compute.amazonaws.com/api/profile/';
-  Map<String, String> headers = {"Content-type": "application/json"};
-  String json = '{"email": ' + '"' + email + '",'+ ' "name": ' + '"' + name + '"'+  ', "status": ' +  '"Sleep"'+ ',' + '"household": ' + '"' + null + '",' + '"password": ' + '"' + pass + '"' + "}";
-  print(json);
-  // make POST request
-  Response response = await post(url, headers: headers, body: json);
-  // check the status code for the result
-  int statusCode = response.statusCode;
-  print(statusCode);
-   // this API passes back the id of the new item added to the body
-  String body = response.body;
-  print(body);
-  return statusCode;
+    String url = 'http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/profile/';
+    Map<String, String> headers = {"Content-type": "application/json"};
+    String json = '{"email": ' + '"' + email + '",'+ ' "name": ' + '"' + name + '"'+  ', "status": ' +  '"Sleep"'+ ',' + '"household": ' + '"' + null + '",' + '"password": ' + '"' + pass + '"' + "}";
+    print(json);
+    // make POST request
+    Response response = await post(url, headers: headers, body: json);
+    // check the status code for the result
+    int statusCode = response.statusCode;
+    print(statusCode);
+    // this API passes back the id of the new item added to the body
+    String body = response.body;
+    if(statusCode == 200) {
+      FileWriter fw = new FileWriter();
+      fw.writeToken(body);
+    }
   }
   
   //The Widget notifies the user if they already have an account to hit cancel and go to Login Page

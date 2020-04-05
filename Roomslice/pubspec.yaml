@@ -46,6 +46,12 @@ flutter:
   assets:
     - assets/logos/facebook.jpg
     - assets/logos/google.jpg
+    - assets/logos/lock.png
+    - assets/logos/envelope.png
+    - assets/logos/notifications.png
+    - assets/logos/faceid.png
+    - assets/logos/profile.png
+    - assets/logos/twofactor.jpeg
 
    
 
