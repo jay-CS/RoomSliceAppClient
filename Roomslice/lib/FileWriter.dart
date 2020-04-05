@@ -23,7 +23,8 @@ class FileWriter{
 
       // Read the file.
       String contents = await file.readAsString();
-      
+      // print("Contents:");
+      // print(contents);
       return contents;
     } 
     catch (e) {

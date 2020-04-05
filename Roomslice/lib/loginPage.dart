@@ -29,13 +29,12 @@ class _LoginPageState extends State<LoginPage> {
   Response response = await post(url, headers: headers, body: json);
   // check the status code for the result
   int statusCode = response.statusCode;
-  print(statusCode);
+  print("Status: " + statusCode.toString());
   // this API passes back the id of the new item added to the body
   String body = response.body;
   if(statusCode == 200) {
     FileWriter fw = new FileWriter();
     fw.writeToken(body);
-    print("DONE");
   }
   return statusCode;
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:roomslice/loginPage.dart';
+//import 'package:roomslice/loginPage.dart';
 import 'package:roomslice/main.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -10,9 +10,15 @@ class SettingsPage extends StatefulWidget {
 
 
   class _SettingsPageState extends State<SettingsPage> {
+    
+    ////
+    /// These boolean values are hard coded, however, these need to be data
+    /// taken from the server and displayed on the mobile app.
     bool notificationisOn = true;
     bool faceIDisOn = true;
     bool twofactorisOn = true;
+
+    //Builds all the necessary items a user can navigate to look/change information 
     @override
     Widget build(BuildContext context) {
       return GestureDetector(
@@ -62,23 +68,27 @@ class SettingsPage extends StatefulWidget {
                           Expanded(
                             child: _buildTile3(context),
                           ),
-                          Container(
-                            child: RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text: 'Terms of Service and Conditions',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 14.0,
-                                      fontWeight: FontWeight.w400
-                                    )
-                                  ),
-                                ] 
-                              ),
-                            )
+                          GestureDetector(
+                            onTap: () {
+                              print("Terms of Service and Conditions pressed");
+                            },
+                            child: Container(
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: 'Terms of Service and Conditions',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.w400
+                                      )
+                                    ),
+                                  ] 
+                                ),
+                              )
+                            ),
                           ),
-
                           Container(
                             padding: EdgeInsets.only(bottom: 20.0,top:20.0),
                             child: RaisedButton(
@@ -109,8 +119,7 @@ class SettingsPage extends StatefulWidget {
           );
     }
 
-  //Builds all the necessary items a user can navigate to look/change information 
-  Widget _buildTile1(BuildContext con) {
+    Widget _buildTile1(BuildContext con) {
     return ListView(
       physics: NeverScrollableScrollPhysics(),
       children: ListTile.divideTiles(
@@ -118,7 +127,7 @@ class SettingsPage extends StatefulWidget {
         tiles: [
         ListTile(
           leading: CircleAvatar(
-            //backgroundImage: 
+            backgroundImage: AssetImage("assets/logos/profile.png"),
           ),
           title: Padding(
                       padding: EdgeInsets.only(left:15.0),
@@ -157,7 +166,7 @@ class SettingsPage extends StatefulWidget {
 
         ListTile(
           leading: CircleAvatar(
-            //backgroundImage: ,
+            backgroundImage: AssetImage("assets/logos/envelope.png"),
           ),
           title: Padding(
             padding: EdgeInsets.only(left:15.0),
@@ -178,10 +187,7 @@ class SettingsPage extends StatefulWidget {
     );
   }
 
-
-
-
-Widget _buildTile2(BuildContext con) {
+    Widget _buildTile2(BuildContext con) {
     return ListView(
       physics: NeverScrollableScrollPhysics(),
       children: ListTile.divideTiles(
@@ -189,7 +195,7 @@ Widget _buildTile2(BuildContext con) {
         tiles: [
           ListTile(
           leading: CircleAvatar(
-            //backgroundImage: ,
+            backgroundImage: AssetImage("assets/logos/notifications.png"),
           ),
           title: Padding(
             padding: EdgeInsets.only(left:15.0),
@@ -218,7 +224,7 @@ Widget _buildTile2(BuildContext con) {
 
         ListTile(
           leading: CircleAvatar(
-            //backgroundImage: ,
+            backgroundImage: AssetImage("assets/logos/faceid.png"),
           ),
           title: Padding(
             padding: EdgeInsets.only(left:15.0),
@@ -246,7 +252,7 @@ Widget _buildTile2(BuildContext con) {
         ),
         ListTile(
           leading: CircleAvatar(
-            //backgroundImage: ,
+            backgroundImage: AssetImage("assets/logos/twofactor.jpeg"),
           ),
           title: Padding(
             padding: EdgeInsets.only(left:15.0),
@@ -259,7 +265,7 @@ Widget _buildTile2(BuildContext con) {
             ),
           ),
           trailing: CupertinoSwitch(
-            value: faceIDisOn,
+            value: twofactorisOn,
             onChanged: (bool value) {
               setState(() {
                 print("Two Factor Authentication Pressed");
@@ -268,7 +274,7 @@ Widget _buildTile2(BuildContext con) {
             }),
             onTap: () {
               setState(() {
-                twofactorisOn = !faceIDisOn;
+                twofactorisOn = !twofactorisOn;
               });
             }
         ),
@@ -277,7 +283,7 @@ Widget _buildTile2(BuildContext con) {
     );
   }
 
-  Widget _buildTile3(BuildContext con) {
+    Widget _buildTile3(BuildContext con) {
     return ListView(
       physics: NeverScrollableScrollPhysics(),
       children: ListTile.divideTiles(
@@ -306,4 +312,4 @@ Widget _buildTile2(BuildContext con) {
     );
   }
 
- }
+  }

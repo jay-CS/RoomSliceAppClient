@@ -1,9 +1,7 @@
-
+import './FileWriter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:async';
-import 'package:http/http.dart' as http;
-import 'package:roomslice/FileWriter.dart';
+import 'package:http/http.dart';
 import 'textWrapper.dart';
 
 
@@ -11,48 +9,47 @@ double scrnWidth = 0;
 double scrnHeight = 0;
 double blockSize = 0;
 double blockSizeVertical = 0;
-final fw = new FileWriter();
 
-class Roomate{
-  Roomate(this.id, this.email, this.name,this.status,this.household); 
-  final int id;
-  final String email;
-  final String name;
-  final String status;
-  final int household;
-
+class HomePage extends StatefulWidget {
+  _HomePageState createState() => _HomePageState();
 }
 
-@override
-class HomePage extends StatelessWidget {
-  
+class _HomePageState extends State<HomePage> {
 
-  Future<String> fetchUser() async {
-    String id;
-    await fw.getID1().then((value) {
-      id = value;
-    });
-    if(id != null && id != "" ) {
-       http.Response response = await http.get(
-      //Uri.encodeFull removes all the dashes or extra characters present in our Uri
-        Uri.encodeFull('http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/profile/' + id ),
-        headers: {
-        //if your api require key then pass your key here as well e.g "key": "my-long-key"
-       "Accept": "application/json" 
-        }
-      );
-      print(response.body);
-      return response.body;
-    }
-    else {
-      print("Nothing");
-      return null;
-    }
+  Future<String> userName;
+  FileWriter fw = new FileWriter();
+  String name;
+
+
+
+  Future<String> getName() async {
+
+    FileWriter fw = new FileWriter();
+    //String userToken = await fw.readToken();
+    String userID = await fw.getID1();
+    String url = 'http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/profile/' +  userID + ' /';
+    // make POST request
+    Response response = await get(url);
+    // check the status code for the result
+    int statusCode = response.statusCode;
+    print("Status: " + statusCode.toString());
+    // this API passes back the id of the new item added to the body
+    String body = response.body;
+    return body;
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    userName = getName();
   }
 
 
+
   Widget build(BuildContext context) {
-    
+
+
     scrnWidth = MediaQuery.of(context).size.width;
     scrnHeight = MediaQuery.of(context).size.height;
     blockSize = scrnWidth / 100;
@@ -91,84 +88,102 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-              children: <Widget>[
+        child: Container(
+          child: FutureBuilder(
+            future: userName,
+            builder: (context, snapshot) {
+              
+              switch (snapshot.connectionState) {
+                case ConnectionState.active:
+                return Container();
+                case ConnectionState.waiting:
+                return Container();
+                case ConnectionState.none:
+                return Container();
+                case ConnectionState.done:
+                  String temp = snapshot.data.toString().replaceAll('"', "");
+                  List<String> name = temp.substring(1,temp.length).split(",");
+                  String name1 = name[2].split(":")[1];
+                  print(name1);
+                  
+                  return GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: Stack(
+                        children: <Widget>[
 
-                Container(
+                          Container(
 
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.purple[400],
-                        Colors.purple[300],
-                        Colors.purple[200],
-                        Colors.purple[100],
-                      ],
-                      stops: [0.1, 0.4, 0.7, 0.9],
-                    ),
-                  ),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.purple[400],
+                                  Colors.purple[300],
+                                  Colors.purple[200],
+                                  Colors.purple[100],
+                                ],
+                                stops: [0.1, 0.4, 0.7, 0.9],
+                              ),
+                            ),
 
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
 
-                    children: <Widget>[
-                    
-                      //_addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      // _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      // _buildProfilePicRow(blockSizeVertical*20, context),
-                      // _addText( "Rommate Name",  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-                      // _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-                      projectWidget(context),
-
-
-
-                      _addColorBarText(statusBarText, statusBarHeight+10),
-
-//-------------------------ROOMMATE STATUS LIST-------------------------
-                      Expanded(
-
-
-                        child:
-                        ListView.builder(
-
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all( 2),
-                          itemCount:15, //dynamic
-                          itemBuilder: (BuildContext context, int index){
-                            return Container(
-                              height: 9*blockSizeVertical,
-
-                              color: Colors.purple[500],
-                              child: _addStatusRow(userID, context, 2),
-                            );
-                          },
+                              children: <Widget>[
+                                SizedBox(height:10),
+                                //_addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
+                                _addText("Household Info", blockSizeVertical*3 , TextAlign.center, FontWeight.normal, FontStyle.normal),
+                                _buildProfilePicRow(blockSizeVertical*20, context),
+                                _addText(name1,  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
+                                _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
 
 
-                        ),
+                                _addColorBarText(statusBarText, Colors.blue ),
 
-                      ),
-
-//-------------------------ROOMMATE STATUS LIST-------------------------
-
-                    ],
-                  ),
+          //-------------------------ROOMMATE STATUS LIST-------------------------
+                                Expanded(
 
 
+                                  child:
+                                  ListView.builder(
+
+                                    shrinkWrap: true,
+                                    padding: const EdgeInsets.all(2),
+                                    itemCount:15, //dynamic
+                                    itemBuilder: (BuildContext context, int index){
+                                      return Container(
+                                        height: 9*blockSizeVertical,
+
+                                        color: Colors.purple[500],
+                                        child: _addStatusRow(userID, context, 2),
+                                      );
+                                    },
+
+
+                                  ),
+
+                                ),
+
+          //-------------------------ROOMMATE STATUS LIST-------------------------
+
+                              ],
+                            ),
 
 
 
-                ),
-
-              ]),
 
 
+                          ),
 
-        ),
+                        ]),
+
+                );
+              }
+            }
+            ),
+        )
       ),
 
     );
@@ -182,7 +197,7 @@ class HomePage extends StatelessWidget {
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            //_buildRoundButton(() => print("Change Profile Pic"), AssetImage("assets/logos/profilePic.png"), size),
+            _buildRoundButton(() => print("Change Profile Pic"), AssetImage("assets/logos/profile.png"), size),
 
 
           ]
@@ -231,32 +246,7 @@ class HomePage extends StatelessWidget {
         ));
   }
 
-Widget _addProfile(BuildContext context, String s) {
-  print("STUFF");
-  print(s);
-  return Container(
-    child: Column(children: <Widget>[
-                      _addText("", blockSizeVertical*9 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _addText("Household Info", blockSizeVertical*3 , TextAlign.left, FontWeight.normal, FontStyle.normal),
-                      _buildProfilePicRow(blockSizeVertical*20, context),
-                      _addText(s,  blockSizeVertical*4.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-                      _addText("", blockSizeVertical*1.0, TextAlign.center, FontWeight.normal, FontStyle.normal),
-    ],),
-  );
-}
 
-Widget projectWidget(BuildContext context) {
-  return FutureBuilder(
-    future: fetchUser(),
-    builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return _addProfile(context, snapshot.data);
-      }
-      print("Here1");
-        return _addProfile(context, "");
-      }
-  );
-}
 
   Widget _addTextRow(List<Widget> widgList) {
 
@@ -270,26 +260,11 @@ Widget projectWidget(BuildContext context) {
   }
 
 
-  Widget _addColorBarText(List<Widget> widgList, double height){
+  Widget _addColorBarText(List<Widget> widgList, Color color){
 
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        border: Border(
-          top: BorderSide(width: 1.0, color: Colors.white),
+    return Card(
 
-          bottom: BorderSide(width: 1.0, color: Colors.white),
-        ),
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-
-          colors: [
-            Colors.blue[400],
-            Colors.blue[300],
-            Colors.blue[200],
-            Colors.blue[100],
-          ],),),
+      color: color,
       child:
 
 
@@ -301,7 +276,8 @@ Widget projectWidget(BuildContext context) {
   }
 
 
-
+  //TODO MODIFY CODE so that we pass in the Roomate's name and status
+  //We are gunna get a list of roomates with a GET REQUEST FROM THE SERVER
   Widget  _addStatusRow(int userID, BuildContext context, int status){
 
     TextWrapper genText = new TextWrapper(context);
@@ -413,9 +389,6 @@ Widget projectWidget(BuildContext context) {
 
 
   }
-
-
-
 
 
 }
