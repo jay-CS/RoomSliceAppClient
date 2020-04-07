@@ -1,10 +1,5 @@
-/// Creates a logo for each alternative sign in option a person has
-///
-///
-///
-///
-///
-///
+///  Some useful functions for potential re-use in multiple .dart files
+///  Maybe a better way?
 
 import 'package:flutter/material.dart';
 
