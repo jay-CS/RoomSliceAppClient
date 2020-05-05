@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 import './signupPage.dart';
 import './forgotPasswordPage.dart';
 import './FileWriter.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,36 +14,26 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  static int i = 0;
+  static String email;
+  static String pass;
   final emailController = TextEditingController();
   final passController = TextEditingController();
-  bool _autoValidate = true;
+  FileWriter fw = new FileWriter();
+  bool change = false;
 
-  //String _name;
+  String loginMutation = r'''mutation TokenAuth($email: String!, $password: String!){
+                    tokenAuth(email: $email, password: $password) {
+                      token
+                      }
+                    }
+                  ''';
 
-  
-  Future<int> _makePostRequest(String username, String password) async {
-  // set up POST request arguments
-  String url = 'http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/login/';
-  Map<String, String> headers = {"Content-type": "application/json"};
-  String json = '{"username": ' + '"' + username + '",'+ ' "password": ' + '"' + password + '"'+"}";
-  // make POST request
-  Response response = await post(url, headers: headers, body: json);
-  // check the status code for the result
-  int statusCode = response.statusCode;
-  print("Status: " + statusCode.toString());
-  // this API passes back the id of the new item added to the body
-  String body = response.body;
-  if(statusCode == 200) {
-    FileWriter fw = new FileWriter();
-    fw.writeToken(body);
-  }
-  return statusCode;
-}
 
   //// EMAIL
   /// Creates the Email Text Field
   Widget _buildEmail() {
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -207,34 +199,29 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
    
-  void _validateInputs() {
-  if (_formKey.currentState.validate()) {
-//    If all data are correct then save data to out variables
-    _formKey.currentState.save();
-  } else {
-//    If all data are not valid then start auto validation.
-    setState(() {
-      _autoValidate = true;
-    });
-  }
-}
+//   void _validateInputs() {
+//   if (_formKey.currentState.validate()) {
+// //    If all data are correct then save data to out variables
+//     _formKey.currentState.save();
+//   } else {
+// //    If all data are not valid then start auto validation.
+//     setState(() {
+//       _autoValidate = true;
+//     });
+//   }
+// }
 
   ////
   /// Creates the Login Button 
-  Widget _buildLoginButton() {
+  Widget _buildLoginButton(RunMutation runMutation) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 25.0),
       width: double.infinity,
       child: RaisedButton(
         elevation: 5.0,
         onPressed: () {
-          _makePostRequest(emailController.text,passController.text).then((int value) {
-            if(value == 200) {
-              Navigator.pushNamed(context,'Roomify',);
-            }
-        else {
-          _validateInputs();
-        }
+          setState(() {
+            runMutation({"email": emailController.text,"password":passController.text});
           });
         },
         padding:EdgeInsets.all(15.0),
@@ -359,79 +346,177 @@ Widget _buildSignUpButton() {
   //// Constructs the entire login page
   @override
   Widget build(BuildContext context) {
-    return new Form(
-      key: _formKey,
-      autovalidate: _autoValidate,
-      child: Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle.light,
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: double.infinity,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.purple[400],
-                      Colors.purple[300],
-                      Colors.purple[200],
-                      Colors.purple[100],
-                    ],
-                    stops: [0.1, 0.4, 0.7, 0.9],
-                  ),
-                ),
-              ),
-              Container(
-                height: double.infinity,
-                child: SingleChildScrollView(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 40.0,
-                    vertical: 120.0,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        'RoomSlice',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'OpenSans',
-                          fontSize: 45.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 30.0),
-                      _buildEmail(),
-                      SizedBox(
-                        height: 30.0,
-                      ),
-                      _buildPassword(),
-                      _buildForgotPasswordButton(),
-                      _buildRememberMeCheckBox(),
-                      _buildLoginButton(),
-                      _buildSignInWithText(),
-                      _buildSocialButtonRow(),
-                      _buildSignUpButton(),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
+
+    emailController.addListener(() {
+        email = emailController.text;
+    });
+    passController.addListener(() {
+      pass = passController.text;
+    });
+
+    final HttpLink httpLink =
+        HttpLink(uri: 'http://ubuntu@ec2-3-22-167-219.us-east-2.compute.amazonaws.com/graphql/');
+  
+    final ValueNotifier<GraphQLClient> client = ValueNotifier<GraphQLClient>(
+      GraphQLClient(
+        link: httpLink,
+        cache: InMemoryCache(),
       ),
-      )
+    );
+
+    return GraphQLProvider(
+        client: client,
+          child: Mutation(
+          options: MutationOptions(
+            documentNode: gql(loginMutation),
+            
+            update: (Cache cache, QueryResult result) {
+              return cache;
+            },
+
+            onCompleted: (dynamic resultData) {
+              print("Oncompleted: $resultData" ) ;
+              if(resultData != null && resultData.toString() != null) {
+                  fw.removeFile();
+                  fw.writeToken(resultData.toString());
+                  Navigator.popAndPushNamed(context,'Roomify',);
+              }
+            },
+
+            onError: (onError) {
+              print("error $onError");
+            }
+
+          ),
+          builder: (RunMutation runMutation, QueryResult result) {
+            
+            return
+              WillPopScope(
+                onWillPop: () async => false,
+                child: Scaffold(
+
+                body: AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: SystemUiOverlayStyle.light,
+                  child: GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          height: double.infinity,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.purple[400],
+                                Colors.purple[300],
+                                Colors.purple[200],
+                                Colors.purple[100],
+                              ],
+                              stops: [0.1, 0.4, 0.7, 0.9],
+                            ),
+                          ),
+                        ),
+                        Container(
+                          height: double.infinity,
+                          child: SingleChildScrollView(
+                           scrollDirection: Axis.vertical,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 40.0,
+                              vertical: 120.0,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'RoomSlice',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'OpenSans',
+                                    fontSize: 45.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 30.0),
+                                _buildEmail(),
+                                SizedBox(
+                                  height: 30.0,
+                                ),
+                                _buildPassword(),
+                                _buildForgotPasswordButton(),
+                                _buildRememberMeCheckBox(),
+                                _buildLoginButton(runMutation),
+                                _buildSignInWithText(),
+                                _buildSocialButtonRow(),
+                                _buildSignUpButton(),
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+            ),
+              );
+          }
+        )
     );
   }
+
 }
+// build() {
+//EXAMPLE QUERY
+//  String queries = """ query{
+//     households {
+//       id 
+//       name
+//       users {
+//           id
+//           firstName
+//           lastName
+// 	    email
+//           status
+//       }
+//     }
+// }
+// """;
+// child: Query(
+        //   options: QueryOptions(
+        //     documentNode: gql(queries),
+        //   ),
+        //     builder: (QueryResult result, { VoidCallback refetch, FetchMore fetchMore }) {
+        //     if (result.hasException) {
+        //         print(result.exception.toString());
+        //     }
 
 
+        //     if(result != null) {
+        //       print(result.data);
+        //     }
+        // return INSERT_WIDGET();
+// } //end of build function for class
+
+//Example HTTP Post Request
+ // Future<int> _makePostRequest(String username, String password) async {
+//   // set up POST request arguments
+//   String url = 'http://ec2-3-21-170-238.us-east-2.compute.amazonaws.com/api/login/';
+//   Map<String, String> headers = {"Content-type": "application/json"};
+//   String json = '{"username": ' + '"' + username + '",'+ ' "password": ' + '"' + password + '"'+"}";
+//   // make POST request
+//   Response response = await post(url, headers: headers, body: json);
+//   // check the status code for the result
+//   int statusCode = response.statusCode;
+//   print("Status: " + statusCode.toString());
+//   // this API passes back the id of the new item added to the body
+//   String body = response.body;
+//   if(statusCode == 200) {
+//     FileWriter fw = new FileWriter();
+//     fw.writeToken(body);
+//   }
+//   return statusCode;
+// }
 
 
 

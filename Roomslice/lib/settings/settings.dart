@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:roomslice/main.dart';
 
 class SettingsPage extends StatefulWidget {
+  SettingsPage({Key key}) : super(key:key);
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -30,9 +31,12 @@ class SettingsPage extends StatefulWidget {
                     color: Colors.purple[200],
                   ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    
                       children: <Widget>[ Container(
                       //alignment: Alignment.center,
-                        margin: EdgeInsets.only(top: 15.0,left: 10.0,right: 10.0),
+                        margin: EdgeInsets.only(top: 60.0,left: 10.0,right: 10.0),
                         height: 750,
                         width: 500,
                         padding: EdgeInsets.only(left: 15.00),
@@ -41,24 +45,31 @@ class SettingsPage extends StatefulWidget {
                           borderRadius: BorderRadius.circular(10.0)
                         ),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        
                         children: <Widget>[
                           Container(
                             alignment: Alignment.topLeft,
-                            padding: EdgeInsets.only(left: 10.0, top: 20.0, bottom: 10.00),
+                            padding: EdgeInsets.only(left: 10.0, top: 20.0),
                             child: Text("Account Settings")
                           ),
-                          Expanded(
-                            child: _buildTile1(context),
+                          Container(
+                            alignment: Alignment.bottomRight,
+                            height: 175,
+                              child: _buildTile1(context),
+                            
                           ),
-                         
                           Container(
                             alignment: Alignment.topLeft,
                             padding: EdgeInsets.only(left: 10.0, top: 5.0, bottom: 10.00),
                             child: Text("Security and Notifcations")
                           ),
-                           Expanded(
-                            child: _buildTile2(context),
+                           Container(
+                            alignment: Alignment.bottomRight,
+                            height: 175,
+                            
+                              child: _buildTile2(context),
+                            
                           ),
                           Container(
                             alignment: Alignment.topLeft,
@@ -120,17 +131,18 @@ class SettingsPage extends StatefulWidget {
     }
 
     Widget _buildTile1(BuildContext con) {
-    return ListView(
+    return ListView.builder(
+      padding: EdgeInsets.zero,
       physics: NeverScrollableScrollPhysics(),
-      children: ListTile.divideTiles(
-        context: con,
-        tiles: [
-        ListTile(
+      itemCount: 3,
+      itemBuilder: (context, int index) {
+      if( index == 0) {
+        return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage("assets/logos/profile.png"),
           ),
           title: Padding(
-                      padding: EdgeInsets.only(left:15.0),
+                      padding: EdgeInsets.only(left:15.0,top:5.0),
                       child: Text(
               "Update Profile",
               style: TextStyle(
@@ -143,8 +155,10 @@ class SettingsPage extends StatefulWidget {
           onTap: () {
             print("Update Profile Pressed");
           }
-        ),
-        ListTile(
+        );
+      }
+      if( index == 1) {
+        return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage("assets/logos/lock.png"),
           ),
@@ -162,9 +176,10 @@ class SettingsPage extends StatefulWidget {
           onTap: () {
             print("Update Password Pressed");
           }
-        ),
-
-        ListTile(
+        );
+      }
+      else {
+        return ListTile(
           leading: CircleAvatar(
             backgroundImage: AssetImage("assets/logos/envelope.png"),
           ),
@@ -182,23 +197,28 @@ class SettingsPage extends StatefulWidget {
           onTap: () {
             print("Update Email Pressed");
           }
-        ),
-    ]).toList()
+        );
+      }
+      }
     );
   }
 
     Widget _buildTile2(BuildContext con) {
+
     return ListView(
+      padding: EdgeInsets.zero,
       physics: NeverScrollableScrollPhysics(),
       children: ListTile.divideTiles(
+        
         context: con,
         tiles: [
           ListTile(
+          
           leading: CircleAvatar(
             backgroundImage: AssetImage("assets/logos/notifications.png"),
           ),
           title: Padding(
-            padding: EdgeInsets.only(left:15.0),
+            padding: EdgeInsets.only(left:15.0,top:0.0),
                       child: Text(
               "Notification",
               style: TextStyle(
@@ -285,6 +305,7 @@ class SettingsPage extends StatefulWidget {
 
     Widget _buildTile3(BuildContext con) {
     return ListView(
+      padding: EdgeInsets.zero,
       physics: NeverScrollableScrollPhysics(),
       children: ListTile.divideTiles(
         context: con,
@@ -294,7 +315,7 @@ class SettingsPage extends StatefulWidget {
             //backgroundImage: ,
           ),
           title: Padding(
-            padding: EdgeInsets.only(left:15.0),
+            padding: EdgeInsets.only(left:15.0,),
                       child: Text(
               "English",
               style: TextStyle(

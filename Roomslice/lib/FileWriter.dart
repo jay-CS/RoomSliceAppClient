@@ -1,41 +1,56 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 
 class FileWriter{
 
-  Future<File> get _localFile async {
-    return File('/Users/samantharain/Desktop/SchoolProjects/RoomSliceAppClient/Roomslice/lib/Token.txt');
+  Future<String> get _localPath async {
+
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+    
   }
 
 
- Future<File> writeToken(String token) async {
-    final file = await _localFile;
+  Future<File> get _localFile async {
 
-  // Write the file.
+    final path = await _localPath;
+    return File('$path/Token.txt');
+
+  }
+
+  void removeFile() async{
+
+    final file = await _localFile;
+    file.delete();
+
+  }
+
+ Future<File> writeToken(String token) async {
+
+    final file = await _localFile;
     return file.writeAsString('$token');
+
   }
 
 
   Future<String> readToken() async {
+
     try {
       final file = await _localFile;
-
-      // Read the file.
       String contents = await file.readAsString();
-      // print("Contents:");
-      // print(contents);
       return contents;
     } 
+
     catch (e) {
-      // If encountering an error, return 0.
-      return "0";
+      return "ERROR IN FILE HANDLING";
     }
+
   }
 
 
 
-  //Needs to be fixed
   String getID() {
     String val;
     readToken().then((value){
@@ -52,19 +67,18 @@ class FileWriter{
     return val;
   }
 
-Future<String> getID1() async {
-  try {
+  Future<String> getID1() async {
+    
+    try {
       final file = await _localFile;
-
-      // Read the file.
       String contents = await file.readAsString();
-      
       return contents[57];
-  }
+    }
 
     catch (e) {
-      // If encountering an error, return 0.
       return "0";
     }
-}
+
+  }
+
 }
