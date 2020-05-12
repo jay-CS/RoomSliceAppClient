@@ -42,27 +42,24 @@ class _HomePageState extends State<HomePage> {
 
     TextWrapper genText = new TextWrapper(context);
     List <Widget> statusBarText = new List<Widget>();
-    
+
+    //MOVE genText maybe, just need to change the hardcoded "DO NOT DISTRUB"
 //------------------------------------STATUS BAR TEXT------------------------------
-    double statusBarHeight = blockSizeVertical*3;
-    genText.setStyle(TextStyle(
-      fontSize: statusBarHeight,
-      fontWeight: FontWeight.bold,
-    ));
-    genText.setData("Status: ");
-    statusBarText.add(genText.constructText());
-    statusBarText.add(statusGenerator(2, statusBarHeight));
-    genText.setData("Home (Do Not Disturb)");
-    genText.setStyle(TextStyle(
-      fontSize: statusBarHeight,
-      fontStyle: FontStyle.normal,
-    ));
+    // double statusBarHeight = blockSizeVertical*3;
+    // genText.setStyle(TextStyle(
+    //   fontSize: statusBarHeight,
+    //   fontWeight: FontWeight.bold,
+    // ));
+    // genText.setData("Status: ");
+    // statusBarText.add(genText.constructText());
+    // statusBarText.add(statusGenerator(2, statusBarHeight));
+    // genText.setData("Home (Do Not Disturb)");
+    // genText.setStyle(TextStyle(
+    //   fontSize: statusBarHeight,
+    //   fontStyle: FontStyle.normal,
+    // ));
 
-
-    statusBarText.add(
-
-
-        genText.constructText());
+    // statusBarText.add( genText.constructText());
 
 
 //------------------------------------STATUS BAR TEXT------------------------------
@@ -111,6 +108,16 @@ class _HomePageState extends State<HomePage> {
                                                 
                                               }
                                           }''';
+
+                  String householdQuery  = """ 
+                                            query {
+                                                  me {
+                                                      household {
+                                                          id
+                                                      }
+                                                  }
+                                              }
+                                              """;
                   final HttpLink httpLink =
                        HttpLink(uri: 'http://ubuntu@ec2-3-22-167-219.us-east-2.compute.amazonaws.com/graphql/',
                                 headers: {
@@ -136,8 +143,24 @@ class _HomePageState extends State<HomePage> {
                             print(result.exception.toString());
                         }
                         
+                      
                         if(result.data != null && result.data.toString() != null) {
                           s = result.data["homepage"];
+                          double statusBarHeight = blockSizeVertical*3;
+                          genText.setStyle(TextStyle(
+                            fontSize: statusBarHeight,
+                            fontWeight: FontWeight.bold,
+                          ));
+                          genText.setData("Status: ");
+                          statusBarText.add(genText.constructText());
+                          statusBarText.add(statusGenerator(2, statusBarHeight));
+                          genText.setData(s[1]["status"]);
+                          genText.setStyle(TextStyle(
+                            fontSize: statusBarHeight,
+                            fontStyle: FontStyle.normal,
+                          ));
+
+                          statusBarText.add( genText.constructText());
                           return homepageBody(statusBarText, 0);
                         }
 

@@ -247,7 +247,7 @@ class _SignupPageState extends State<SignupPage> {
                 if(resultData != null) {
                   //FileWriter fw;
                   //fw.writeToken();
-                  Navigator.popAndPushNamed(context, 'Roomify');
+                  Navigator.pop(context);
                 }
               },
               
@@ -259,7 +259,9 @@ class _SignupPageState extends State<SignupPage> {
         builder: (RunMutation runMutation, QueryResult result){
 
           return Scaffold(
+            
             body: AnnotatedRegion<SystemUiOverlayStyle>(
+  
               value: SystemUiOverlayStyle.light,
               child:GestureDetector(
                 child: Stack(
@@ -297,18 +299,18 @@ class _SignupPageState extends State<SignupPage> {
                                 fontFamily: "Comic Sans",
                               )
                             ),
-                            SizedBox(height: 45.0),
+                            SizedBox(height: 20.0),
                             _buildInformationField("First Name:", "Enter your first name",fNameController,false),
-                            SizedBox(height: 35.0),
+                            SizedBox(height: 25.0),
                             _buildInformationField("Last Name:", "Enter your last name",lNameController,false),
-                            SizedBox(height: 35.0),
+                            SizedBox(height: 25.0),
                             _buildInformationField("Email:", "Enter your email",eNameController,false),
                             // SizedBox(height: 35.0),
                             // _buildInformationField("Number:", "Enter your number",tNumController,false),
-                            SizedBox(height: 35.0),
+                            SizedBox(height: 25.0),
                             _buildPasswordField("Password:", "Enter your password",passController),
-                            SizedBox(height: 35.0),
-                            _buildPasswordField("Password:", "Re-enter your password",confPassController),
+                            //SizedBox(height: 10.0),
+                           // _buildPasswordField("Password:", "Re-enter your password",confPassController),
                             _buildRegisterButton(runMutation),
                             _buildLoginButton()
                           ]

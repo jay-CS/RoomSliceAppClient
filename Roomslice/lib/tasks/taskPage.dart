@@ -20,9 +20,9 @@ class _TaskPageState extends State<TaskPage> {
   final current = new TextEditingController();
   final frequency = new TextEditingController();
 
-  List<TaskCard> task = new List<TaskCard>();
-  // List<Widget> completedTasks = [];
-  // List<Widget> userTasks = [];
+  List<TaskCardState> task = [];
+  //List<Widget> completedTasks = [];
+   List<TaskCardState> userTask = [];
   
   Future<String> userToken;
 
@@ -36,8 +36,7 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
-  
-    task = [];
+    String token;
     return DefaultTabController(
         length: 3,
         child: 
@@ -59,6 +58,7 @@ class _TaskPageState extends State<TaskPage> {
                                               name
                                               description
                                               dueDate
+                                              frequency
                                               current
                                               {
                                                   firstName
@@ -71,8 +71,8 @@ class _TaskPageState extends State<TaskPage> {
                                       }""";
 
                   int len = snapshot.data.toString().length;
-                  String token = snapshot.data.toString().substring(19,len-2).trim();
-                  
+                  token = snapshot.data.toString().substring(19,len-2).trim();
+                  print("TOKEN " + token);
                     final HttpLink httpLink =
                         HttpLink(uri: 'http://ubuntu@ec2-3-22-167-219.us-east-2.compute.amazonaws.com/graphql/',
                                 headers: {
@@ -94,12 +94,13 @@ class _TaskPageState extends State<TaskPage> {
                           documentNode: gql(taskQuery),
                         ), 
                         builder: (QueryResult result, { VoidCallback refetch, FetchMore fetchMore }) {
-
+                            task = [];
+                            userTask = [];      
                             if(result.data != null) {
-                                getCardInfo(result.data["tasks"]);
+                                getCardInfo(result.data["tasks"],token);
                                 List<Widget> tasks = [
                                   CreateHouseholdTask(task),
-                                  Text(""),
+                                  CreateHouseholdTask(userTask),
                                   Text(""),
                                 ];
                                 return Scaffold(
@@ -111,8 +112,11 @@ class _TaskPageState extends State<TaskPage> {
                                         backgroundColor: Colors.purple[400],
                                         onPressed: () { 
                                           print("pressed");
-                                          taskDialog(context,token);
-                                        },
+                                          taskDialog(context,token).then((onValue) {
+                                            task.add(onValue);
+                                          });
+                                          },
+                                        
                                       ),
                                       appBar: AppBar(
                                       backgroundColor: Colors.purple[400],
@@ -155,14 +159,17 @@ class _TaskPageState extends State<TaskPage> {
     ];
   }
 
-  void getCardInfo(List list) {
+  void getCardInfo(List list, String token) {
 
     String taskName;
     String taskDescription;
     String current;
     String dueDate;
+    String frequency;
+    String id;
     bool isComplete;
 
+    print(list);
     for(int i = 0; i < list.length; i++) {
       for (int j = 0 ; j < list[i].length; j++) {
         taskName = list[i][j]["name"];
@@ -170,8 +177,22 @@ class _TaskPageState extends State<TaskPage> {
         dueDate = list[i][j]["dueDate"];
         isComplete = list[i][j]["complete"];
         current = list[i][j]["current"]["firstName"];
-        task.add(TaskCard(taskName, taskDescription, dueDate, current, isComplete));
+        frequency = list[i][j]["frequency"];
+        id = list[i][j]["id"];
+        task.add(TaskCardState(taskName, taskDescription, dueDate, current, isComplete,frequency,id,token));
       }
+    }
+
+    for(int i = 0; i < list.length; i++) {
+      taskName = list[i][0]["name"];
+      taskDescription = list[i][0]["description"];
+      dueDate = list[i][0]["dueDate"];
+      isComplete = list[i][0]["complete"];
+      current = list[i][0]["current"]["firstName"];
+      frequency = list[i][0]["frequency"];
+      id = list[i][0]["id"];
+      userTask.add(TaskCardState(taskName, taskDescription, dueDate, current, isComplete,frequency,id,token));
+
     }
 
    
@@ -195,7 +216,7 @@ class _TaskPageState extends State<TaskPage> {
           );
    }
 
-  Future<Widget> taskDialog(context, String token) {
+  Future<TaskCardState> taskDialog(context, String token) {
 
     String createTask = r"""mutation CreateTask($name: String!, $description: String!, $dueDate: String!, $frequency: String!, $current: Int!, $rotation: [Int]) {
       createTask(
@@ -248,9 +269,26 @@ class _TaskPageState extends State<TaskPage> {
 
                     onCompleted: (dynamic resultData) {
                       print(createTask);
-                      if(resultData != null) {
-                        print("Oncompleted: $resultData" ) ;
-                      }
+                      // if(resultData != null) {
+                      //   print("Oncompleted: $resultData" ) ;
+                      //   List list = resultData[0];
+                      //   print(list);
+                      //    String taskName;
+                      //     String taskDescription;
+                      //     String current;
+                      //     String dueDate;
+                      //     String frequency;
+                      //     String id;
+                      //     bool isComplete;
+                      //   taskName = list[0]["name"];
+                      //   taskDescription = list[0]["description"];
+                      //   dueDate = list[0]["dueDate"];
+                      //   isComplete = list[0]["complete"];
+                      //   current = list[0]["current"]["firstName"];
+                      //   frequency = list[0]["frequency"];
+                      //   id = list[0]["id"];
+                      //   return task.add(TaskCardState(taskName, taskDescription, dueDate, current, isComplete,frequency,id,token));
+                      //}
                     }, 
 
                     onError: (onError) {
@@ -287,7 +325,7 @@ class _TaskPageState extends State<TaskPage> {
                               onPressed: () {
                                 print("Saved");
                                 setState(() {
-                                  runMutation({"name": current.text, "description":taskDescription.text, "dueDate": dueDate.text, "frequency": frequency.text , "current": current.text, "rotation":[3,4,5]});
+                                  runMutation({"name": taskName.text, "description":taskDescription.text, "dueDate": dueDate.text, "frequency": frequency.text , "current": 3, "rotation":[3,4,5]});
                                   Navigator.of(context).pop();
                                 });
                               },

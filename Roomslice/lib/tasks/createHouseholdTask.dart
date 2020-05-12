@@ -5,8 +5,8 @@ import './taskCard.dart';
 //TODO Find a way to read entries from server
 class CreateHouseholdTask extends StatefulWidget {
 
-  List<TaskCard> tasks;
-  CreateHouseholdTask(List<TaskCard> list) {
+  List<TaskCardState> tasks;
+  CreateHouseholdTask(List<TaskCardState> list) {
     tasks = list;
   }
 
@@ -20,7 +20,7 @@ class _CreateHouseholdTaskState extends State<CreateHouseholdTask> {
 
   Future<String> userName;
   Map<String, String> household = {};
-  List<TaskCard> tasks;
+  List<TaskCardState> tasks;
 
   _CreateHouseholdTaskState(list) {
     tasks = list;
@@ -41,25 +41,13 @@ class _CreateHouseholdTaskState extends State<CreateHouseholdTask> {
       physics: AlwaysScrollableScrollPhysics(),
       itemCount: tasks.length,
       itemBuilder: (context, int index) {
-        return Dismissible(
-          key: ValueKey(index),
-          onDismissed: (direction) {
-
-            //Why does it remove it still in the opposite direction
-            if(direction == DismissDirection.endToStart) {
-              setState(() {
-                tasks.removeAt(index);
-              });
-            }
-          },
-            child: Container(
+        return Container(
             alignment: Alignment.topLeft,
             padding: EdgeInsets.only(top:30, left: 85, right: 85),
             height: 194,
             width: 50,
             child: tasks[index]
-          ),
-        );
+          );
       }
     );
   }
